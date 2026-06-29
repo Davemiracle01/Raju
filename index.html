@@ -30,19 +30,18 @@
     overflow-x: hidden;
   }
 
-  /* ===== HIGH-END OCEAN BACKGROUND ===== */
   .ocean-bg {
     position: fixed; inset: 0; z-index: 0;
     background: radial-gradient(circle at 50% 0%, #134275 0%, #0a2342 50%, #051326 100%);
   }
 
-  /* Deep layered smooth waves */
   .waves-container {
     position: fixed; bottom: 0; left: 0; width: 100%; height: 200px; z-index: 1; pointer-events: none; opacity: 0.8;
   }
+  /* FIX: corrected broken SVG path in background-url */
   .wave {
     position: absolute; bottom: 0; left: 0; width: 200%; height: 100%;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,32L60,42.7C120,53,240,75,360,74.7C480,75,600,53,720,48C840,43,960,53,1080,58.7C1200,64,1320,64,1380,64L1440,64L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z' fill='%231d63b3' fill-opacity='0.15'%3E%3Cpath%3E%3C/svg%3E") repeat-x;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,32L60,42.7C120,53,240,75,360,74.7C480,75,600,53,720,48C840,43,960,53,1080,58.7C1200,64,1320,64,1380,64L1440,64L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z' fill='%231d63b3' fill-opacity='0.15'/%3E%3C/svg%3E") repeat-x;
     animation: waveMove linear infinite;
     transform-origin: bottom;
   }
@@ -55,7 +54,6 @@
     100% { transform: translateX(-50%); }
   }
 
-  /* Realistic Wobbling Bubbles */
   .bubbles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   .bubble {
     position: absolute; bottom: -50px; border-radius: 50%;
@@ -74,10 +72,8 @@
     50% { margin-left: 15px; }
   }
 
-  /* ===== LAYOUT & APP CONTAINER ===== */
   .page { position: relative; z-index: 2; padding: 24px 20px 180px; max-width: 480px; margin: 0 auto; }
 
-  /* ===== HEADER ===== */
   header { text-align: center; padding: 20px 0 28px; }
   header h1 {
     font-family: 'Playfair Display', serif;
@@ -101,7 +97,6 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   }
 
-  /* ===== ULTRA CARDS (GLASSMORPHISM) ===== */
   .section-title {
     font-size: .75rem; text-transform: uppercase;
     letter-spacing: .15em; color: var(--foam); opacity:.8;
@@ -122,7 +117,7 @@
   .card-title { font-size:1.1rem; font-weight:600; color:var(--sky); letter-spacing: -0.2px;}
   .card-sub { font-size:.8rem; color:var(--foam); opacity:.75; margin-top:3px; }
 
-  /* ===== HAPTIC VIBRATING WASHER ===== */
+  /* ===== WASHER ===== */
   .machine-wrap { display:flex; justify-content:center; padding:12px 0; }
   .machine {
     width: 140px; height: 155px;
@@ -131,9 +126,10 @@
     position: relative;
     box-shadow: 0 15px 35px rgba(0,0,0,0.45), inset 0 2px 4px rgba(255,255,255,0.2);
     display:flex; flex-direction:column; align-items:center; padding-top:14px;
-    animation: washerVibrate 0.15s linear infinite; /* Spin-cycle micro-vibration */
   }
-  
+  /* Vibrate class toggled by JS */
+  .machine.vibrating { animation: washerVibrate 0.15s linear infinite; }
+
   @keyframes washerVibrate {
     0%, 100% { transform: translate(0, 0) rotate(0deg); }
     25% { transform: translate(0.5px, -0.5px) rotate(0.1deg); }
@@ -155,22 +151,27 @@
     border: 4px solid #4a93d1; position:relative; overflow:hidden;
     box-shadow: inset 0 0 25px rgba(0,0,0,0.8), 0 0 15px rgba(29,99,179,0.5);
   }
-  
+
   .drum-rotator {
     width: 100%; height: 100%; position: absolute;
     animation: drumSpin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
+  /* Faster spin during spin cycle */
+  .drum-rotator.fast { animation-duration: 0.5s; }
+
   @keyframes drumSpin {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
 
-  /* Premium SVG Fluid Morphing Wave */
   .water-fluid {
-    position: absolute; bottom: -5px; left: -10px; width: 120px; height: 60px; fill: rgba(29, 99, 179, 0.65);
+    position: absolute; bottom: -5px; left: -10px; width: 120px; height: 60px;
+    fill: rgba(29, 99, 179, 0.65);
+    transition: opacity 0.6s ease;
   }
+  /* FIX: hide water during spin/dry */
+  .water-fluid.hidden { opacity: 0; pointer-events: none; }
 
-  /* Clothes physics inside drum */
   .clothes { position:absolute; width:100%; height:100%; top:0; left:0; }
   .cloth { position:absolute; border-radius:35% 65% 55% 45% / 45% 45% 55% 55%; opacity:.85; filter: blur(0.3px); }
   .cloth:nth-child(1){ width:24px; height:18px; background:#2b7cb6; top:20px; left:15px; animation: internalTumble 1.8s linear infinite; }
@@ -189,33 +190,33 @@
     pointer-events: none; z-index: 5;
   }
 
-  /* ===== PROGRESS BAR ===== */
+  /* ===== PROGRESS ===== */
   .progress-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; margin: 14px 0 8px; }
   .progress-fill {
     height:100%; border-radius:8px;
     background: linear-gradient(90deg, var(--ocean-light), var(--foam), var(--sky));
     background-size: 200% 100%;
-    width: 35%; /* Handled dynamically by updated script below */
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+    transition: width 0.4s ease;
   }
   .progress-labels { display:flex; justify-content:space-between; font-size:.72rem; font-weight: 500; color:var(--foam); opacity:.6; }
   .progress-labels .active-phase { color: var(--white); opacity: 1; text-shadow: 0 0 8px var(--foam); }
 
-  /* ===== INTERACTIVE TRACKING STEPS ===== */
+  /* ===== STEPS ===== */
   .steps { display:flex; justify-content: space-between; position: relative; }
   .step { flex:1; text-align:center; position:relative; z-index: 2; }
-  
+
   .step-connector {
     position: absolute; top: 25px; left: 12.5%; width: 75%; height: 3px;
     background: rgba(255,255,255,0.1); z-index: 1;
   }
   .step-connector-progress {
-    position: absolute; top: 0; left: 0; width: 33.3%; height: 100%;
+    position: absolute; top: 0; left: 0; width: 0%; height: 100%;
     background: linear-gradient(90deg, #1d63b3, var(--foam));
     box-shadow: 0 0 8px var(--foam);
     transition: width 0.6s ease;
   }
-  
+
   .step-dot {
     width:28px; height:28px; border-radius:50%; margin:0 auto 8px;
     border:2px solid rgba(155,225,251,0.3); background: #0c2b4d;
@@ -223,9 +224,7 @@
     font-size:.75rem; color:var(--foam); font-weight: 700;
     transition: all 0.4s var(--spring-ease);
   }
-  .step.completed .step-dot {
-    background: var(--ocean-light); border-color: var(--foam); color: var(--white);
-  }
+  .step.completed .step-dot { background: var(--ocean-light); border-color: var(--foam); color: var(--white); }
   .step.active .step-dot {
     background: var(--white); border-color: var(--white); color: var(--ocean-deep);
     box-shadow: 0 0 20px var(--foam), 0 0 4px var(--white);
@@ -238,11 +237,12 @@
   .step-label { font-size:.7rem; color:var(--foam); opacity:.7; font-weight: 500; transition: color 0.3s; }
   .step.active .step-label { color: var(--white); opacity: 1; font-weight: 600; }
 
-  /* ===== DRYER MIST/STEAM ===== */
-  .steam-wrap { display:flex; justify-content:center; gap:24px; height:50px; align-items:flex-end; }
+  /* ===== DRYER STEAM ===== */
+  .steam-wrap { display:flex; justify-content:center; gap:24px; height:60px; align-items:flex-end; }
+  /* FIX: added explicit height so puffs render */
   .steam-puff {
-    width:24px; border-radius:50%;
-    background: radial-gradient(circle, rgba(224,244,254,0.4) 0%, transparent 70%);
+    width:24px; height:24px; border-radius:50%;
+    background: radial-gradient(circle, rgba(224,244,254,0.5) 0%, transparent 70%);
     filter: blur(4px);
     animation: steamRise 2.5s ease-out infinite;
     transform-origin: bottom center;
@@ -250,7 +250,7 @@
   .steam-puff:nth-child(1){ animation-delay:0s; }
   .steam-puff:nth-child(2){ animation-delay:0.8s; margin-bottom: 5px; }
   .steam-puff:nth-child(3){ animation-delay:1.6s; }
-  
+
   @keyframes steamRise {
     0%  { transform: scale(0.5) translateY(0); opacity: 0; }
     20% { opacity: 0.8; }
@@ -258,8 +258,8 @@
     100%{ transform: scale(2.2) translateY(-40px); opacity: 0; }
   }
 
-  /* ===== PREMIUM SOAP BUBBLES GRAPHIC ===== */
-  .soap-bubbles-wrap { position:relative; height:90px; overflow:hidden; border-radius:16px; background:rgba(0, 0, 0, 0.2); }
+  /* ===== SOAP BUBBLES ===== */
+  .soap-bubbles-wrap { position:relative; height:90px; overflow:hidden; border-radius:16px; background:rgba(0,0,0,0.2); }
   .soap-bubble {
     position:absolute; border-radius:50%;
     background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.6) 0%, rgba(155,225,251,0.1) 40%, rgba(43,124,182,0.3) 100%);
@@ -273,7 +273,11 @@
     100%{ transform:translateY(-30px) translateX(15px) scale(1.1); opacity:0; }
   }
 
-  /* ===== SERVICES GRID (SPRING-LOADED INTERACTION) ===== */
+  /* FIX: soap card hidden outside wash phases */
+  #soapCard { transition: opacity 0.5s ease; }
+  #soapCard.hidden { opacity: 0.25; pointer-events: none; }
+
+  /* ===== SERVICES GRID ===== */
   .services-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .service-item {
     background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
@@ -289,9 +293,9 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
   }
   .service-item:active { transform: translateY(1px) scale(0.97); }
-  
+
   .service-icon-wrap {
-    width: 48px; height: 48px; background: rgba(29, 99, 179, 0.2); border-radius: 50%;
+    width: 48px; height: 48px; background: rgba(29,99,179,0.2); border-radius: 50%;
     display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
     box-shadow: inset 0 0 10px rgba(155,225,251,0.1);
     transition: transform 0.3s;
@@ -300,7 +304,7 @@
   .service-name { font-size:.85rem; font-weight:600; color:var(--sky); text-align:center; }
   .service-price { font-size:.75rem; color:var(--foam); opacity:.8; font-weight: 500; }
 
-  /* ===== STICKY BLURRED FOOTER ===== */
+  /* ===== FOOTER ===== */
   footer {
     position:fixed; bottom:0; left:0; right:0;
     background: linear-gradient(to top, rgba(5,19,38,0.95) 80%, rgba(5,19,38,0.7) 0%);
@@ -347,24 +351,24 @@
   <div class="card">
     <div class="card-header">
       <div>
-        <div class="card-title" id="cycleStatus">Wash in Progress</div>
-        <div class="card-sub" id="cycleTime">Estimated — 22 mins left</div>
+        <div class="card-title" id="cycleStatus">Soaking Cycle Active</div>
+        <div class="card-sub" id="cycleTime">Estimated — 12 mins left</div>
       </div>
     </div>
 
     <div class="machine-wrap">
-      <div class="machine">
+      <div class="machine vibrating" id="machineEl">
         <div class="machine-top-strip"></div>
         <div class="drum-outer">
-          <div class="drum-rotator">
+          <div class="drum-rotator" id="drumRotator">
             <div class="clothes">
               <div class="cloth"></div>
               <div class="cloth"></div>
               <div class="cloth"></div>
             </div>
           </div>
-          <!-- Morphing wave vector graphics inside the drum -->
-          <svg class="water-fluid" viewBox="0 0 100 50" preserveAspectRatio="none">
+          <!-- FIX: water hides during spin/dry via .hidden class -->
+          <svg class="water-fluid" id="waterFluid" viewBox="0 0 100 50" preserveAspectRatio="none">
             <path d="M0,25 C30,10 70,40 100,25 L100,50 L0,50 Z">
               <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
                 values="M0,25 C30,10 70,40 100,25 L100,50 L0,50 Z;
@@ -381,21 +385,20 @@
       <div class="progress-fill" id="liveProgressBar"></div>
     </div>
     <div class="progress-labels">
-      <span id="p-soak">Soak</span>
-      <span id="p-wash" class="active-phase">Wash</span>
+      <span id="p-soak" class="active-phase">Soak</span>
+      <span id="p-wash">Wash</span>
       <span id="p-rinse">Rinse</span>
       <span id="p-spin">Spin</span>
     </div>
   </div>
 
-  <!-- Dynamic Order Steps Card -->
+  <!-- Order Status Card -->
   <p class="section-title">Order Status</p>
   <div class="card">
     <div class="steps">
       <div class="step-connector">
         <div class="step-connector-progress" id="stepConnectorWidth"></div>
       </div>
-      
       <div class="step completed" id="step-0">
         <div class="step-dot">✓</div>
         <div class="step-label">Picked Up</div>
@@ -431,10 +434,10 @@
     </div>
   </div>
 
-  <!-- Soap Bubbles Card -->
+  <!-- Soap & Softener Card -->
   <p class="section-title">Soap & Softener</p>
-  <div class="card">
-    <div class="card-title" style="margin-bottom:12px;">Premium Detergent Active</div>
+  <div class="card" id="soapCard">
+    <div class="card-title" style="margin-bottom:12px;" id="soapLabel">Premium Detergent Active</div>
     <div class="soap-bubbles-wrap" id="soapBubblesWrap"></div>
   </div>
 
@@ -465,30 +468,28 @@
 </div>
 
 <footer>
- <div class="footer-brand">Raju's Laundry</div>
+  <div class="footer-brand">Raju's Laundry</div>
   <a href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20laundry%20pickup%20%F0%9F%91%8D" target="_blank" class="footer-cta">Book a Pickup</a>
 </footer>
 
 <script>
-  // Generate high fidelity background ambient floating bubbles
+  // Background floating bubbles
   const bubblesEl = document.getElementById('bubbles');
-  const totalBackgroundBubbles = 15;
-  for(let i = 0; i < totalBackgroundBubbles; i++){
+  for(let i = 0; i < 15; i++){
     const b = document.createElement('div');
     b.classList.add('bubble');
     const size = 12 + Math.random() * 28;
     b.style.width = `${size}px`;
     b.style.height = `${size}px`;
     b.style.left = `${Math.random() * 100}%`;
-    b.style.animationDuration = `${10 + Math.random() * 14}s, ${3 + Math.random() * 4}s`; // Dual dynamic properties
+    b.style.animationDuration = `${10 + Math.random() * 14}s, ${3 + Math.random() * 4}s`;
     b.style.animationDelay = `${Math.random() * -20}s, ${Math.random() * -5}s`;
     bubblesEl.appendChild(b);
   }
 
-  // Soap micro-bubbles engine inside the premium detergent card
+  // Soap micro-bubbles
   const soapWrap = document.getElementById('soapBubblesWrap');
-  const totalSoapBubbles = 16;
-  for(let i = 0; i < totalSoapBubbles; i++){
+  for(let i = 0; i < 16; i++){
     const sb = document.createElement('div');
     sb.classList.add('soap-bubble');
     const sz = 10 + Math.random() * 24;
@@ -500,57 +501,119 @@
     soapWrap.appendChild(sb);
   }
 
-  // Real-time Dynamic App Flow Simulator
-  let progressPercentage = 38;
-  const progressBar = document.getElementById('liveProgressBar');
-  const cycleTimeText = document.getElementById('cycleTime');
-  const cycleStatusText = document.getElementById('cycleStatus');
-  const connector = document.getElementById('stepConnectorWidth');
-  
-  function updateLiveAppMock() {
-    progressPercentage += 0.5;
-    if(progressPercentage > 100) progressPercentage = 0;
-    
-    progressBar.style.width = `${progressPercentage}%`;
-    
-    // Dynamically calculate fake minutes remaining 
-    let minsLeft = Math.max(1, Math.round((100 - progressPercentage) * 0.35));
-    cycleTimeText.innerText = `Estimated — ${minsLeft} mins left`;
+  // === CYCLE ENGINE ===
+  // Phases: each runs for a set duration in ms, then loops
+  // Total loop = 20 seconds so users see the full cycle quickly
+  const PHASES = [
+    { id: 'soak',  label: 'p-soak',  status: 'Soaking Cycle Active',    duration: 4000,  waterVisible: true,  spinFast: false, stepIndex: 1, soap: true,  soapText: 'Premium Detergent Active' },
+    { id: 'wash',  label: 'p-wash',  status: 'Heavy Wash in Progress',   duration: 5000,  waterVisible: true,  spinFast: false, stepIndex: 1, soap: true,  soapText: 'Premium Detergent Active' },
+    { id: 'rinse', label: 'p-rinse', status: 'Rinsing Fabrics Clean',    duration: 4000,  waterVisible: true,  spinFast: false, stepIndex: 1, soap: false, soapText: 'Softener Rinse Active' },
+    { id: 'spin',  label: 'p-spin',  status: 'High-Speed Spin Cycle',    duration: 3000,  waterVisible: false, spinFast: true,  stepIndex: 1, soap: false, soapText: 'Detergent Removed' },
+    // Brief "Drying" moment before looping
+    { id: 'spin',  label: 'p-spin',  status: 'Tumble Dry — Finishing Up',duration: 4000,  waterVisible: false, spinFast: true,  stepIndex: 2, soap: false, soapText: 'Clothes Fresh & Dry' },
+  ];
 
-    // Manage status phases dynamically based on simulation numbers
-    const labels = ['soak', 'wash', 'rinse', 'spin'];
-    labels.forEach(l => document.getElementById(`p-${l}`).classList.remove('active-phase'));
-    
-    let currentStepIndex = 1; // Default "Washing" State
-    
-    if (progressPercentage < 25) {
-      document.getElementById('p-soak').classList.add('active-phase');
-      cycleStatusText.innerText = "Soaking Cycle Active";
-    } else if (progressPercentage < 60) {
-      document.getElementById('p-wash').classList.add('active-phase');
-      cycleStatusText.innerText = "Heavy Wash in Progress";
-    } else if (progressPercentage < 85) {
-      document.getElementById('p-rinse').classList.add('active-phase');
-      cycleStatusText.innerText = "Rinsing Fabrics Clean";
+  const TOTAL_DURATION = PHASES.reduce((s, p) => s + p.duration, 0);
+
+  const progressBar   = document.getElementById('liveProgressBar');
+  const cycleTimeText = document.getElementById('cycleTime');
+  const cycleStatus   = document.getElementById('cycleStatus');
+  const connector     = document.getElementById('stepConnectorWidth');
+  const waterFluid    = document.getElementById('waterFluid');
+  const machineEl     = document.getElementById('machineEl');
+  const drumRotator   = document.getElementById('drumRotator');
+  const soapCard      = document.getElementById('soapCard');
+  const soapLabel     = document.getElementById('soapLabel');
+
+  let elapsed = 0;
+  let lastTime = null;
+
+  function getPhaseAndProgress(elapsed) {
+    let t = elapsed % TOTAL_DURATION;
+    let cumulative = 0;
+    for (let i = 0; i < PHASES.length; i++) {
+      cumulative += PHASES[i].duration;
+      if (t < cumulative) {
+        const phaseStart = cumulative - PHASES[i].duration;
+        const phaseProgress = (t - phaseStart) / PHASES[i].duration;
+        // Overall progress across full loop
+        const overallProgress = t / TOTAL_DURATION * 100;
+        return { phase: PHASES[i], phaseProgress, overallProgress };
+      }
+    }
+    return { phase: PHASES[PHASES.length - 1], phaseProgress: 1, overallProgress: 100 };
+  }
+
+  function applyPhase(phase, overallProgress) {
+    // Progress bar
+    progressBar.style.width = `${overallProgress.toFixed(1)}%`;
+
+    // Time remaining in loop
+    const secsLeft = Math.max(1, Math.round((TOTAL_DURATION - (elapsed % TOTAL_DURATION)) / 1000));
+    cycleTimeText.innerText = `Estimated — ${secsLeft} sec${secsLeft !== 1 ? 's' : ''} left`;
+
+    // Status text
+    cycleStatus.innerText = phase.status;
+
+    // Phase labels
+    ['soak','wash','rinse','spin'].forEach(l => {
+      document.getElementById(`p-${l}`).classList.remove('active-phase');
+    });
+    document.getElementById(phase.label).classList.add('active-phase');
+
+    // FIX: water visibility
+    if (phase.waterVisible) {
+      waterFluid.classList.remove('hidden');
     } else {
-      document.getElementById('p-spin').classList.add('active-phase');
-      cycleStatusText.innerText = "High-Speed Spin Cycle";
-      currentStepIndex = 2; // Transition mockup layout state over to "Drying"
+      waterFluid.classList.add('hidden');
     }
 
-    // Dynamic Step Progress bar mapping updates
-    if (currentStepIndex === 1) {
+    // FIX: vibrate only during spin, drum speed
+    if (phase.spinFast) {
+      machineEl.classList.add('vibrating');
+      drumRotator.classList.add('fast');
+    } else {
+      machineEl.classList.remove('vibrating');
+      drumRotator.classList.remove('fast');
+    }
+
+    // FIX: soap card visibility
+    if (phase.soap) {
+      soapCard.classList.remove('hidden');
+    } else {
+      soapCard.classList.add('hidden');
+    }
+    soapLabel.innerText = phase.soapText;
+
+    // FIX: order steps — step-0 always completed, others driven by stepIndex
+    document.getElementById('step-0').className = 'step completed';
+
+    if (phase.stepIndex === 1) {
       connector.style.width = '33.3%';
-      document.getElementById('step-1').className = "step active";
-      document.getElementById('step-2').className = "step";
-    } else if (currentStepIndex === 2) {
+      document.getElementById('step-1').className = 'step active';
+      document.getElementById('step-2').className = 'step';
+      document.getElementById('step-3').className = 'step';
+    } else if (phase.stepIndex === 2) {
       connector.style.width = '66.6%';
-      document.getElementById('step-1').className = "step completed";
-      document.getElementById('step-2').className = "step active";
+      document.getElementById('step-1').className = 'step completed';
+      document.getElementById('step-2').className = 'step active';
+      document.getElementById('step-3').className = 'step';
     }
   }
 
-  setInterval(updateLiveAppMock, 800);
+  function tick(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    const delta = timestamp - lastTime;
+    lastTime = timestamp;
+    elapsed += delta;
+
+    const { phase, overallProgress } = getPhaseAndProgress(elapsed);
+    applyPhase(phase, overallProgress);
+
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
 </script>
 </body>
 </html>
