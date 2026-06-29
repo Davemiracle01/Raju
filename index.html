@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raju's Laundry – Rongai</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ocean-deep: #06152d;
+    --ocean-mid:  #0d345c;
+    --ocean-light:#1d63b3;
+    --foam:       #9be1fb;
+    --sky:        #e0f4fe;
+    --white:      #ffffff;
+    --neon-glow:  rgba(155, 225, 251, 0.4);
+    --spring-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ocean-deep);
+    color: var(--white);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== HIGH-END OCEAN BACKGROUND ===== */
+  .ocean-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(circle at 50% 0%, #134275 0%, #0a2342 50%, #051326 100%);
+  }
+
+  /* Deep layered smooth waves */
+  .waves-container {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 200px; z-index: 1; pointer-events: none; opacity: 0.8;
+  }
+  .wave {
+    position: absolute; bottom: 0; left: 0; width: 200%; height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,32L60,42.7C120,53,240,75,360,74.7C480,75,600,53,720,48C840,43,960,53,1080,58.7C1200,64,1320,64,1380,64L1440,64L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z' fill='%231d63b3' fill-opacity='0.15'%3E%3Cpath%3E%3C/svg%3E") repeat-x;
+    animation: waveMove linear infinite;
+    transform-origin: bottom;
+  }
+  .wave:nth-child(1){ animation-duration: 12s; height: 130px; }
+  .wave:nth-child(2){ animation-duration: 18s; height: 110px; opacity: 0.6; animation-direction: reverse; }
+  .wave:nth-child(3){ animation-duration: 25s; height: 150px; opacity: 0.4; }
+
+  @keyframes waveMove {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Realistic Wobbling Bubbles */
+  .bubbles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  .bubble {
+    position: absolute; bottom: -50px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(155,225,251,0.05) 70%);
+    box-shadow: inset 0 0 6px rgba(255,255,255,0.3), 0 2px 10px rgba(155,225,251,0.2);
+    animation: bubbleRise linear infinite, bubbleWobble ease-in-out infinite;
+  }
+  @keyframes bubbleRise {
+    0%   { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-105vh); opacity: 0; }
+  }
+  @keyframes bubbleWobble {
+    0%, 100% { margin-left: 0px; }
+    50% { margin-left: 15px; }
+  }
+
+  /* ===== LAYOUT & APP CONTAINER ===== */
+  .page { position: relative; z-index: 2; padding: 24px 20px 180px; max-width: 480px; margin: 0 auto; }
+
+  /* ===== HEADER ===== */
+  header { text-align: center; padding: 20px 0 28px; }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    color: var(--sky);
+    text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  header h1 span { color: var(--foam); font-style: italic; font-weight: 400; }
+  header p {
+    font-size: .8rem; color: var(--foam); opacity: .85;
+    margin-top: 6px; letter-spacing: .15em; text-transform: uppercase;
+    font-weight: 500;
+  }
+  .location-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, rgba(29,99,179,0.4), rgba(13,52,92,0.4));
+    border: 1px solid rgba(155,225,251,0.25);
+    color: var(--sky); font-size:.8rem; font-weight: 500;
+    padding: 6px 16px; border-radius: 30px; margin-top: 16px;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+
+  /* ===== ULTRA CARDS (GLASSMORPHISM) ===== */
+  .section-title {
+    font-size: .75rem; text-transform: uppercase;
+    letter-spacing: .15em; color: var(--foam); opacity:.8;
+    margin: 32px 0 14px 6px; font-weight: 600;
+  }
+
+  .card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+    border: 1px solid rgba(155,225,251,0.15);
+    border-radius: 24px; padding: 24px; margin-bottom: 18px;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.1);
+    transition: transform 0.3s var(--spring-ease), box-shadow 0.3s;
+  }
+  .card:hover { box-shadow: 0 16px 45px rgba(155,225,251,0.1), inset 0 1px 1px rgba(255,255,255,0.15); }
+
+  .card-header { display:flex; align-items:center; justify-content: space-between; margin-bottom:18px; }
+  .card-title { font-size:1.1rem; font-weight:600; color:var(--sky); letter-spacing: -0.2px;}
+  .card-sub { font-size:.8rem; color:var(--foam); opacity:.75; margin-top:3px; }
+
+  /* ===== HAPTIC VIBRATING WASHER ===== */
+  .machine-wrap { display:flex; justify-content:center; padding:12px 0; }
+  .machine {
+    width: 140px; height: 155px;
+    background: linear-gradient(145deg, #165691, #0a3154);
+    border-radius: 22px; border: 3px solid rgba(155,225,251,0.45);
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.45), inset 0 2px 4px rgba(255,255,255,0.2);
+    display:flex; flex-direction:column; align-items:center; padding-top:14px;
+    animation: washerVibrate 0.15s linear infinite; /* Spin-cycle micro-vibration */
+  }
+  
+  @keyframes washerVibrate {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(0.5px, -0.5px) rotate(0.1deg); }
+    50% { transform: translate(-0.5px, 0.5px) rotate(-0.1deg); }
+    75% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  }
+
+  .machine-top-strip {
+    width:82%; height:8px; background: rgba(155,225,251,0.3);
+    border-radius:6px; margin-bottom:14px; display: flex; gap: 4px; justify-content: flex-end; padding-right: 4px;
+  }
+  .machine-top-strip::after {
+    content: ''; width: 4px; height: 4px; background: #5ef38f; border-radius: 50%; box-shadow: 0 0 8px #5ef38f;
+  }
+
+  .drum-outer {
+    width:95px; height:95px; border-radius:50%;
+    background: radial-gradient(circle at 50% 50%, #06192e 0%, #0d345c 100%);
+    border: 4px solid #4a93d1; position:relative; overflow:hidden;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.8), 0 0 15px rgba(29,99,179,0.5);
+  }
+  
+  .drum-rotator {
+    width: 100%; height: 100%; position: absolute;
+    animation: drumSpin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes drumSpin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Premium SVG Fluid Morphing Wave */
+  .water-fluid {
+    position: absolute; bottom: -5px; left: -10px; width: 120px; height: 60px; fill: rgba(29, 99, 179, 0.65);
+  }
+
+  /* Clothes physics inside drum */
+  .clothes { position:absolute; width:100%; height:100%; top:0; left:0; }
+  .cloth { position:absolute; border-radius:35% 65% 55% 45% / 45% 45% 55% 55%; opacity:.85; filter: blur(0.3px); }
+  .cloth:nth-child(1){ width:24px; height:18px; background:#2b7cb6; top:20px; left:15px; animation: internalTumble 1.8s linear infinite; }
+  .cloth:nth-child(2){ width:18px; height:22px; background:#539ed2; top:45px; left:45px; animation: internalTumble 2.2s linear infinite reverse; }
+  .cloth:nth-child(3){ width:20px; height:15px; background:#8cd3f5; top:18px; left:50px; animation: internalTumble 1.5s linear infinite; }
+
+  @keyframes internalTumble {
+    0%  { transform: rotate(0deg) translate(0, 0) scale(1); }
+    50% { transform: rotate(180deg) translate(8px, -10px) scale(0.9); }
+    100%{ transform: rotate(360deg) translate(0, 0) scale(1); }
+  }
+
+  .drum-glass {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.05) 100%);
+    pointer-events: none; z-index: 5;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; margin: 14px 0 8px; }
+  .progress-fill {
+    height:100%; border-radius:8px;
+    background: linear-gradient(90deg, var(--ocean-light), var(--foam), var(--sky));
+    background-size: 200% 100%;
+    width: 35%; /* Handled dynamically by updated script below */
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .progress-labels { display:flex; justify-content:space-between; font-size:.72rem; font-weight: 500; color:var(--foam); opacity:.6; }
+  .progress-labels .active-phase { color: var(--white); opacity: 1; text-shadow: 0 0 8px var(--foam); }
+
+  /* ===== INTERACTIVE TRACKING STEPS ===== */
+  .steps { display:flex; justify-content: space-between; position: relative; }
+  .step { flex:1; text-align:center; position:relative; z-index: 2; }
+  
+  .step-connector {
+    position: absolute; top: 25px; left: 12.5%; width: 75%; height: 3px;
+    background: rgba(255,255,255,0.1); z-index: 1;
+  }
+  .step-connector-progress {
+    position: absolute; top: 0; left: 0; width: 33.3%; height: 100%;
+    background: linear-gradient(90deg, #1d63b3, var(--foam));
+    box-shadow: 0 0 8px var(--foam);
+    transition: width 0.6s ease;
+  }
+  
+  .step-dot {
+    width:28px; height:28px; border-radius:50%; margin:0 auto 8px;
+    border:2px solid rgba(155,225,251,0.3); background: #0c2b4d;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.75rem; color:var(--foam); font-weight: 700;
+    transition: all 0.4s var(--spring-ease);
+  }
+  .step.completed .step-dot {
+    background: var(--ocean-light); border-color: var(--foam); color: var(--white);
+  }
+  .step.active .step-dot {
+    background: var(--white); border-color: var(--white); color: var(--ocean-deep);
+    box-shadow: 0 0 20px var(--foam), 0 0 4px var(--white);
+    animation: pulseGlow 2s infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(155,225,251,0.6); }
+    50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(155,225,251,0.9); }
+  }
+  .step-label { font-size:.7rem; color:var(--foam); opacity:.7; font-weight: 500; transition: color 0.3s; }
+  .step.active .step-label { color: var(--white); opacity: 1; font-weight: 600; }
+
+  /* ===== DRYER MIST/STEAM ===== */
+  .steam-wrap { display:flex; justify-content:center; gap:24px; height:50px; align-items:flex-end; }
+  .steam-puff {
+    width:24px; border-radius:50%;
+    background: radial-gradient(circle, rgba(224,244,254,0.4) 0%, transparent 70%);
+    filter: blur(4px);
+    animation: steamRise 2.5s ease-out infinite;
+    transform-origin: bottom center;
+  }
+  .steam-puff:nth-child(1){ animation-delay:0s; }
+  .steam-puff:nth-child(2){ animation-delay:0.8s; margin-bottom: 5px; }
+  .steam-puff:nth-child(3){ animation-delay:1.6s; }
+  
+  @keyframes steamRise {
+    0%  { transform: scale(0.5) translateY(0); opacity: 0; }
+    20% { opacity: 0.8; }
+    60% { transform: scale(1.8) translateY(-20px); opacity: 0.3; }
+    100%{ transform: scale(2.2) translateY(-40px); opacity: 0; }
+  }
+
+  /* ===== PREMIUM SOAP BUBBLES GRAPHIC ===== */
+  .soap-bubbles-wrap { position:relative; height:90px; overflow:hidden; border-radius:16px; background:rgba(0, 0, 0, 0.2); }
+  .soap-bubble {
+    position:absolute; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.6) 0%, rgba(155,225,251,0.1) 40%, rgba(43,124,182,0.3) 100%);
+    box-shadow: inset -2px -2px 6px rgba(155,225,251,0.4), 0 2px 8px rgba(0,0,0,0.15);
+    animation: soapFloat ease-in-out infinite;
+  }
+  @keyframes soapFloat {
+    0%  { transform:translateY(110px) translateX(0) scale(.5); opacity:0; }
+    30% { opacity: 1; }
+    90% { opacity: 0.8; }
+    100%{ transform:translateY(-30px) translateX(15px) scale(1.1); opacity:0; }
+  }
+
+  /* ===== SERVICES GRID (SPRING-LOADED INTERACTION) ===== */
+  .services-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .service-item {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid rgba(155,225,251,0.15); border-radius:20px; padding: 20px 14px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    text-decoration: none; cursor: pointer;
+    transition: transform 0.4s var(--spring-ease), border-color 0.3s, box-shadow 0.3s;
+  }
+  .service-item:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(155,225,251,0.4);
+    box-shadow: 0 8px 25px rgba(29,99,179,0.25);
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  }
+  .service-item:active { transform: translateY(1px) scale(0.97); }
+  
+  .service-icon-wrap {
+    width: 48px; height: 48px; background: rgba(29, 99, 179, 0.2); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+    box-shadow: inset 0 0 10px rgba(155,225,251,0.1);
+    transition: transform 0.3s;
+  }
+  .service-item:hover .service-icon-wrap { transform: scale(1.1) rotate(5deg); }
+  .service-name { font-size:.85rem; font-weight:600; color:var(--sky); text-align:center; }
+  .service-price { font-size:.75rem; color:var(--foam); opacity:.8; font-weight: 500; }
+
+  /* ===== STICKY BLURRED FOOTER ===== */
+  footer {
+    position:fixed; bottom:0; left:0; right:0;
+    background: linear-gradient(to top, rgba(5,19,38,0.95) 80%, rgba(5,19,38,0.7) 0%);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border-top:1px solid rgba(155,225,251,0.15); padding:18px 28px 28px;
+    display:flex; justify-content:space-between; align-items:center; z-index:10;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+  }
+  .footer-brand { font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--sky); font-weight: 700; }
+  .footer-cta {
+    background: linear-gradient(135deg, #1d63b3, #0d345c);
+    border:1px solid rgba(255,255,255,0.1); color:var(--white);
+    padding:10px 22px; border-radius:30px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:.85rem;
+    cursor:pointer; letter-spacing:.02em; text-decoration: none;
+    box-shadow: 0 6px 20px rgba(29,99,179,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .footer-cta:hover { box-shadow: 0 8px 25px rgba(29,99,179,0.5); transform: translateY(-1px); }
+  .footer-cta:active { transform:scale(.97); }
+</style>
+</head>
+<body>
+
+<div class="ocean-bg"></div>
+
+<div class="waves-container">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="wave"></div>
+</div>
+
+<div class="bubbles" id="bubbles"></div>
+
+<div class="page">
+  <header>
+    <h1>Raju's <span>Laundry</span></h1>
+    <p>Fresh. Clean. Delivered.</p>
+    <div class="location-badge">📍 Rongai, Nairobi</div>
+  </header>
+
+  <!-- Washing Machine Card -->
+  <p class="section-title">Live Wash Cycle</p>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title" id="cycleStatus">Wash in Progress</div>
+        <div class="card-sub" id="cycleTime">Estimated — 22 mins left</div>
+      </div>
+    </div>
+
+    <div class="machine-wrap">
+      <div class="machine">
+        <div class="machine-top-strip"></div>
+        <div class="drum-outer">
+          <div class="drum-rotator">
+            <div class="clothes">
+              <div class="cloth"></div>
+              <div class="cloth"></div>
+              <div class="cloth"></div>
+            </div>
+          </div>
+          <!-- Morphing wave vector graphics inside the drum -->
+          <svg class="water-fluid" viewBox="0 0 100 50" preserveAspectRatio="none">
+            <path d="M0,25 C30,10 70,40 100,25 L100,50 L0,50 Z">
+              <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
+                values="M0,25 C30,10 70,40 100,25 L100,50 L0,50 Z;
+                        M0,25 C30,40 70,10 100,25 L100,50 L0,50 Z;
+                        M0,25 C30,10 70,40 100,25 L100,50 L0,50 Z" />
+            </path>
+          </svg>
+          <div class="drum-glass"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-track" style="margin-top:20px;">
+      <div class="progress-fill" id="liveProgressBar"></div>
+    </div>
+    <div class="progress-labels">
+      <span id="p-soak">Soak</span>
+      <span id="p-wash" class="active-phase">Wash</span>
+      <span id="p-rinse">Rinse</span>
+      <span id="p-spin">Spin</span>
+    </div>
+  </div>
+
+  <!-- Dynamic Order Steps Card -->
+  <p class="section-title">Order Status</p>
+  <div class="card">
+    <div class="steps">
+      <div class="step-connector">
+        <div class="step-connector-progress" id="stepConnectorWidth"></div>
+      </div>
+      
+      <div class="step completed" id="step-0">
+        <div class="step-dot">✓</div>
+        <div class="step-label">Picked Up</div>
+      </div>
+      <div class="step active" id="step-1">
+        <div class="step-dot">⟳</div>
+        <div class="step-label">Washing</div>
+      </div>
+      <div class="step" id="step-2">
+        <div class="step-dot">💨</div>
+        <div class="step-label">Drying</div>
+      </div>
+      <div class="step" id="step-3">
+        <div class="step-dot">📦</div>
+        <div class="step-label">Delivery</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hot Dryer Card -->
+  <p class="section-title">Hot Dryer</p>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Drying Cycle</div>
+        <div class="card-sub">High heat – tumble dry</div>
+      </div>
+    </div>
+    <div class="steam-wrap">
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+    </div>
+  </div>
+
+  <!-- Soap Bubbles Card -->
+  <p class="section-title">Soap & Softener</p>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px;">Premium Detergent Active</div>
+    <div class="soap-bubbles-wrap" id="soapBubblesWrap"></div>
+  </div>
+
+  <!-- Services Grid -->
+  <p class="section-title">Services – Tap to Order</p>
+  <div class="services-grid">
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20Wash%20%26%20Fold%20service%20%F0%9F%91%95" target="_blank">
+      <div class="service-icon-wrap">👕</div>
+      <div class="service-name">Wash & Fold</div>
+      <div class="service-price">From KES 200/kg</div>
+    </a>
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I%20need%20Dry%20Cleaning%20services%20%F0%9F%A7%A5" target="_blank">
+      <div class="service-icon-wrap">🧥</div>
+      <div class="service-name">Dry Clean</div>
+      <div class="service-price">From KES 350/pc</div>
+    </a>
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20Bedding%20laundry%20service%20%F0%9F%9B%8F%EF%B8%8F" target="_blank">
+      <div class="service-icon-wrap">🛏️</div>
+      <div class="service-name">Bedding</div>
+      <div class="service-price">From KES 500/set</div>
+    </a>
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20Pick%20%26%20Deliver%20in%20Rongai%20%F0%9F%9A%97" target="_blank">
+      <div class="service-icon-wrap">🚗</div>
+      <div class="service-name">Pick & Deliver</div>
+      <div class="service-price">Free in Rongai</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand">Raju's Laundry</div>
+  <a href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20laundry%20pickup%20%F0%9F%91%8D" target="_blank" class="footer-cta">Book a Pickup</a>
+</footer>
+
+<script>
+  // Generate high fidelity background ambient floating bubbles
+  const bubblesEl = document.getElementById('bubbles');
+  const totalBackgroundBubbles = 15;
+  for(le
