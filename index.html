@@ -465,7 +465,7 @@
 </div>
 
 <footer>
-  <div class="footer-brand">Raju's Laundry</div>
+ <div class="footer-brand">Raju's Laundry</div>
   <a href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20laundry%20pickup%20%F0%9F%91%8D" target="_blank" class="footer-cta">Book a Pickup</a>
 </footer>
 
@@ -473,4 +473,84 @@
   // Generate high fidelity background ambient floating bubbles
   const bubblesEl = document.getElementById('bubbles');
   const totalBackgroundBubbles = 15;
-  for(le
+  for(let i = 0; i < totalBackgroundBubbles; i++){
+    const b = document.createElement('div');
+    b.classList.add('bubble');
+    const size = 12 + Math.random() * 28;
+    b.style.width = `${size}px`;
+    b.style.height = `${size}px`;
+    b.style.left = `${Math.random() * 100}%`;
+    b.style.animationDuration = `${10 + Math.random() * 14}s, ${3 + Math.random() * 4}s`; // Dual dynamic properties
+    b.style.animationDelay = `${Math.random() * -20}s, ${Math.random() * -5}s`;
+    bubblesEl.appendChild(b);
+  }
+
+  // Soap micro-bubbles engine inside the premium detergent card
+  const soapWrap = document.getElementById('soapBubblesWrap');
+  const totalSoapBubbles = 16;
+  for(let i = 0; i < totalSoapBubbles; i++){
+    const sb = document.createElement('div');
+    sb.classList.add('soap-bubble');
+    const sz = 10 + Math.random() * 24;
+    sb.style.width = `${sz}px`;
+    sb.style.height = `${sz}px`;
+    sb.style.left = `${Math.random() * 92}%`;
+    sb.style.animationDuration = `${2.2 + Math.random() * 2.5}s`;
+    sb.style.animationDelay = `${Math.random() * -4}s`;
+    soapWrap.appendChild(sb);
+  }
+
+  // Real-time Dynamic App Flow Simulator
+  let progressPercentage = 38;
+  const progressBar = document.getElementById('liveProgressBar');
+  const cycleTimeText = document.getElementById('cycleTime');
+  const cycleStatusText = document.getElementById('cycleStatus');
+  const connector = document.getElementById('stepConnectorWidth');
+  
+  function updateLiveAppMock() {
+    progressPercentage += 0.5;
+    if(progressPercentage > 100) progressPercentage = 0;
+    
+    progressBar.style.width = `${progressPercentage}%`;
+    
+    // Dynamically calculate fake minutes remaining 
+    let minsLeft = Math.max(1, Math.round((100 - progressPercentage) * 0.35));
+    cycleTimeText.innerText = `Estimated — ${minsLeft} mins left`;
+
+    // Manage status phases dynamically based on simulation numbers
+    const labels = ['soak', 'wash', 'rinse', 'spin'];
+    labels.forEach(l => document.getElementById(`p-${l}`).classList.remove('active-phase'));
+    
+    let currentStepIndex = 1; // Default "Washing" State
+    
+    if (progressPercentage < 25) {
+      document.getElementById('p-soak').classList.add('active-phase');
+      cycleStatusText.innerText = "Soaking Cycle Active";
+    } else if (progressPercentage < 60) {
+      document.getElementById('p-wash').classList.add('active-phase');
+      cycleStatusText.innerText = "Heavy Wash in Progress";
+    } else if (progressPercentage < 85) {
+      document.getElementById('p-rinse').classList.add('active-phase');
+      cycleStatusText.innerText = "Rinsing Fabrics Clean";
+    } else {
+      document.getElementById('p-spin').classList.add('active-phase');
+      cycleStatusText.innerText = "High-Speed Spin Cycle";
+      currentStepIndex = 2; // Transition mockup layout state over to "Drying"
+    }
+
+    // Dynamic Step Progress bar mapping updates
+    if (currentStepIndex === 1) {
+      connector.style.width = '33.3%';
+      document.getElementById('step-1').className = "step active";
+      document.getElementById('step-2').className = "step";
+    } else if (currentStepIndex === 2) {
+      connector.style.width = '66.6%';
+      document.getElementById('step-1').className = "step completed";
+      document.getElementById('step-2').className = "step active";
+    }
+  }
+
+  setInterval(updateLiveAppMock, 800);
+</script>
+</body>
+</html>
