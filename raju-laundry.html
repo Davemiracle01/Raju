@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raju's Laundry – Rongai</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ocean-deep: #0a2540;
+    --ocean-mid:  #1a4a7a;
+    --ocean-light:#2e7ebf;
+    --foam:       #a8d8f0;
+    --sky:        #d6eefa;
+    --white:      #f0f8ff;
+    --bubble:     rgba(168,216,240,0.25);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ocean-deep);
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== OCEAN BACKGROUND ===== */
+  .ocean-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: linear-gradient(180deg, #0d2f52 0%, #1a5a8a 45%, #0a2540 100%);
+  }
+
+  /* Animated waves */
+  .waves-container {
+    position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1;
+  }
+  .wave {
+    position: absolute; bottom: 0; left: 0;
+    width: 200%; height: 120px;
+    background: rgba(46,126,191,0.25);
+    border-radius: 50% 50% 0 0;
+    animation: waveMove linear infinite;
+  }
+  .wave:nth-child(1){ animation-duration: 7s; opacity:.6; }
+  .wave:nth-child(2){ animation-duration: 10s; opacity:.4; bottom:10px; background:rgba(168,216,240,.2); }
+  .wave:nth-child(3){ animation-duration: 13s; opacity:.3; bottom:20px; }
+
+  @keyframes waveMove {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Floating bubbles */
+  .bubbles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(168,216,240,0.4);
+    background: rgba(168,216,240,0.06);
+    animation: bubbleRise linear infinite;
+  }
+  @keyframes bubbleRise {
+    0%   { transform: translateY(100vh) scale(0.5); opacity:0; }
+    10%  { opacity:.6; }
+    90%  { opacity:.3; }
+    100% { transform: translateY(-120px) scale(1); opacity:0; }
+  }
+
+  /* ===== LAYOUT ===== */
+  .page { position: relative; z-index: 2; padding: 20px 16px 160px; max-width: 480px; margin: 0 auto; }
+
+  /* ===== HEADER ===== */
+  header { text-align: center; padding: 32px 0 24px; }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--sky);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  header h1 span { color: var(--foam); }
+  header p {
+    font-size: .85rem;
+    color: var(--foam);
+    opacity: .8;
+    margin-top: 6px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .location-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(46,126,191,.35);
+    border: 1px solid rgba(168,216,240,.3);
+    color: var(--sky); font-size:.78rem;
+    padding: 4px 12px; border-radius: 20px;
+    margin-top: 12px;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ===== CARDS ===== */
+  .section-title {
+    font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .12em; color: var(--foam); opacity:.7;
+    margin: 28px 0 12px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(168,216,240,0.18);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 4px 24px rgba(0,0,0,.2);
+    transition: transform .25s, box-shadow .25s;
+  }
+  .card:active { transform: scale(.98); }
+
+  .card-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .card-title { font-size:1rem; font-weight:700; color:var(--sky); }
+  .card-sub { font-size:.75rem; color:var(--foam); opacity:.7; margin-top:2px; }
+
+  /* ===== WASHING MACHINE ===== */
+  .machine-wrap { display:flex; justify-content:center; padding:10px 0; }
+  .machine {
+    width: 120px; height: 130px;
+    background: linear-gradient(145deg, #1e6fa8, #0f4a78);
+    border-radius: 16px;
+    border: 2.5px solid rgba(168,216,240,.4);
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.1);
+    display:flex; flex-direction:column; align-items:center;
+    padding-top:12px;
+  }
+  .machine-top-strip {
+    width:80%; height:6px;
+    background: rgba(168,216,240,.25);
+    border-radius:4px;
+    margin-bottom:10px;
+  }
+  .drum-outer {
+    width:80px; height:80px;
+    border-radius:50%;
+    background: linear-gradient(135deg, #0a2540 0%, #1a4a7a 100%);
+    border: 3px solid rgba(168,216,240,.5);
+    position:relative;
+    overflow:hidden;
+    box-shadow: inset 0 0 20px rgba(0,0,0,.5), 0 0 12px rgba(46,126,191,.4);
+    animation: drumSpin 2.5s linear infinite;
+  }
+  @keyframes drumSpin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .drum-inner { width:100%; height:100%; position:relative; }
+  .drum-hole {
+    width:14px; height:14px;
+    border-radius:50%;
+    background: rgba(168,216,240,.2);
+    border: 1.5px solid rgba(168,216,240,.4);
+    position:absolute;
+  }
+  .drum-hole:nth-child(1){ top:10px; left:50%; transform:translateX(-50%); }
+  .drum-hole:nth-child(2){ bottom:10px; left:50%; transform:translateX(-50%); }
+  .drum-hole:nth-child(3){ left:10px; top:50%; transform:translateY(-50%); }
+  .drum-hole:nth-child(4){ right:10px; top:50%; transform:translateY(-50%); }
+
+  /* Water slosh inside drum */
+  .water-slosh {
+    position:absolute; bottom:0; left:0; width:100%; height:45%;
+    background: linear-gradient(180deg, rgba(46,126,191,.6) 0%, rgba(10,37,64,.8) 100%);
+    border-radius:50%;
+    animation: slosh 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes slosh {
+    0%   { transform: translateX(-8px) scaleY(1); }
+    100% { transform: translateX(8px) scaleY(1.08); }
+  }
+
+  /* Clothes tumbling */
+  .clothes { position:absolute; width:100%; height:100%; top:0; left:0; }
+  .cloth {
+    position:absolute;
+    border-radius:6px;
+    opacity:.75;
+    animation: tumble 2.5s linear infinite;
+  }
+  .cloth:nth-child(1){ width:22px; height:14px; background:#3a8fc7; top:20px; left:12px; animation-delay:0s; }
+  .cloth:nth-child(2){ width:14px; height:18px; background:#5ba8d8; top:40px; left:42px; animation-delay:-.8s; }
+  .cloth:nth-child(3){ width:18px; height:12px; background:#7ec8e3; top:15px; left:42px; animation-delay:-1.6s; }
+  @keyframes tumble {
+    0%  { transform: rotate(0deg) translate(0,0); }
+    25% { transform: rotate(90deg) translate(5px,-5px); }
+    50% { transform: rotate(180deg) translate(0,8px); }
+    75% { transform: rotate(270deg) translate(-5px,-3px); }
+    100%{ transform: rotate(360deg) translate(0,0); }
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-track {
+    height: 6px;
+    background: rgba(255,255,255,.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 10px 0 6px;
+  }
+  .progress-fill {
+    height:100%;
+    border-radius:6px;
+    background: linear-gradient(90deg, #2e7ebf, #a8d8f0);
+    animation: progressFlow 4s ease-in-out infinite;
+  }
+  @keyframes progressFlow {
+    0%   { width:5%; }
+    50%  { width:85%; }
+    100% { width:5%; }
+  }
+  .progress-labels { display:flex; justify-content:space-between; font-size:.7rem; color:var(--foam); opacity:.6; }
+
+  /* ===== STEPS ===== */
+  .steps { display:flex; gap:0; }
+  .step {
+    flex:1; text-align:center; position:relative;
+    padding-top: 12px;
+  }
+  .step:not(:last-child)::after {
+    content:'';
+    position:absolute; top:22px; left:50%; width:100%; height:2px;
+    background: rgba(168,216,240,.2);
+    z-index:0;
+  }
+  .step-dot {
+    width:24px; height:24px; border-radius:50%;
+    margin:0 auto 6px;
+    border:2px solid rgba(168,216,240,.5);
+    background: rgba(46,126,191,.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.65rem; color:var(--foam);
+    position:relative; z-index:1;
+  }
+  .step-dot.active {
+    background: var(--ocean-light);
+    border-color: var(--foam);
+    box-shadow: 0 0 12px rgba(168,216,240,.5);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100%{ box-shadow:0 0 12px rgba(168,216,240,.4); }
+    50%    { box-shadow:0 0 22px rgba(168,216,240,.8); }
+  }
+  .step-label { font-size:.62rem; color:var(--foam); opacity:.7; }
+
+  /* ===== SERVICES ===== */
+  .services-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .service-item {
+    background: rgba(255,255,255,.05);
+    border:1px solid rgba(168,216,240,.25);
+    border-radius:14px; padding:14px 12px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    transition: transform .2s, box-shadow .2s, background .2s;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(46,126,191,.25), 0 0 20px rgba(168,216,240,.08);
+    animation: serviceGlow 3s ease-in-out infinite;
+  }
+  .service-item:nth-child(1){ animation-delay: 0s; }
+  .service-item:nth-child(2){ animation-delay: .75s; }
+  .service-item:nth-child(3){ animation-delay: 1.5s; }
+  .service-item:nth-child(4){ animation-delay: 2.25s; }
+  @keyframes serviceGlow {
+    0%,100%{ box-shadow: 0 0 8px rgba(46,126,191,.3), 0 0 18px rgba(168,216,240,.08); border-color:rgba(168,216,240,.25); }
+    50%    { box-shadow: 0 0 18px rgba(46,126,191,.6), 0 0 32px rgba(168,216,240,.2); border-color:rgba(168,216,240,.55); }
+  }
+  .service-item:active {
+    transform: scale(.96);
+    background: rgba(46,126,191,.25);
+    box-shadow: 0 0 28px rgba(46,126,191,.7), 0 0 50px rgba(168,216,240,.3);
+  }
+  .service-icon { font-size:1.8rem; }
+  .service-name { font-size:.78rem; font-weight:600; color:var(--sky); text-align:center; }
+  .service-price { font-size:.7rem; color:var(--foam); opacity:.7; }
+
+  /* ===== SOAP BUBBLES ANIMATION ===== */
+  .soap-bubbles-wrap { position:relative; height:80px; overflow:hidden; border-radius:12px; background:rgba(0,0,0,.1); }
+  .soap-bubble {
+    position:absolute; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), rgba(168,216,240,.08));
+    border:1px solid rgba(168,216,240,.35);
+    animation: soapFloat ease-in-out infinite;
+  }
+  @keyframes soapFloat {
+    0%  { transform:translateY(90px) scale(.4); opacity:0; }
+    20% { opacity:.8; }
+    80% { opacity:.5; }
+    100%{ transform:translateY(-20px) scale(1.1); opacity:0; }
+  }
+
+  /* ===== STEAM ===== */
+  .steam-wrap { display:flex; justify-content:center; gap:10px; height:50px; align-items:flex-end; }
+  .steam-puff {
+    width:18px; border-radius:50px;
+    background: linear-gradient(180deg, rgba(168,216,240,.5), transparent);
+    animation: steamRise 2s ease-out infinite;
+  }
+  .steam-puff:nth-child(1){ height:40px; animation-delay:0s; }
+  .steam-puff:nth-child(2){ height:28px; animation-delay:.6s; }
+  .steam-puff:nth-child(3){ height:36px; animation-delay:1.2s; }
+  @keyframes steamRise {
+    0%  { transform:scaleX(1) translateY(0); opacity:.6; }
+    50% { transform:scaleX(1.4) translateY(-15px); opacity:.4; }
+    100%{ transform:scaleX(.8) translateY(-35px); opacity:0; }
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    position:fixed; bottom:0; left:0; right:0;
+    background: rgba(10,37,64,.85);
+    backdrop-filter:blur(14px);
+    border-top:1px solid rgba(168,216,240,.15);
+    padding:14px 24px;
+    display:flex; justify-content:space-between; align-items:center;
+    z-index:10;
+  }
+  .footer-brand { font-family:'Playfair Display',serif; font-size:.9rem; color:var(--foam); }
+  .footer-cta {
+    background: linear-gradient(135deg, #2e7ebf, #1a5a8a);
+    border:none; color:var(--white);
+    padding:8px 18px; border-radius:20px;
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:.8rem;
+    cursor:pointer; letter-spacing:.03em;
+    text-decoration: none;
+    box-shadow:0 4px 14px rgba(46,126,191,.4);
+    transition:transform .15s;
+  }
+  .footer-cta:active { transform:scale(.96); }
+</style>
+</head>
+<body>
+
+<!-- Ocean Background -->
+<div class="ocean-bg"></div>
+
+<!-- Waves -->
+<div class="waves-container">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="wave"></div>
+</div>
+
+<!-- Bubbles (generated by JS) -->
+<div class="bubbles" id="bubbles"></div>
+
+<div class="page">
+  <header>
+    <h1>Raju's <span>Laundry</span></h1>
+    <p>Fresh. Clean. Delivered.</p>
+    <div class="location-badge">📍 Rongai, Nairobi</div>
+  </header>
+
+  <!-- Washing Machine Card -->
+  <p class="section-title">Live Wash Cycle</p>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Wash in Progress</div>
+        <div class="card-sub">Estimated — 22 mins left</div>
+      </div>
+    </div>
+
+    <div class="machine-wrap">
+      <div class="machine">
+        <div class="machine-top-strip"></div>
+        <div class="drum-outer">
+          <div class="drum-inner">
+            <div class="water-slosh"></div>
+            <div class="clothes">
+              <div class="cloth"></div>
+              <div class="cloth"></div>
+              <div class="cloth"></div>
+            </div>
+            <div class="drum-hole"></div>
+            <div class="drum-hole"></div>
+            <div class="drum-hole"></div>
+            <div class="drum-hole"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-track" style="margin-top:16px;">
+      <div class="progress-fill"></div>
+    </div>
+    <div class="progress-labels"><span>Soak</span><span>Wash</span><span>Rinse</span><span>Spin</span></div>
+  </div>
+
+  <!-- Steps Card -->
+  <p class="section-title">Order Status</p>
+  <div class="card">
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot">✓</div>
+        <div class="step-label">Picked Up</div>
+      </div>
+      <div class="step">
+        <div class="step-dot active">⟳</div>
+        <div class="step-label">Washing</div>
+      </div>
+      <div class="step">
+        <div class="step-dot">💨</div>
+        <div class="step-label">Drying</div>
+      </div>
+      <div class="step">
+        <div class="step-dot">📦</div>
+        <div class="step-label">Delivery</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steam / Dryer card -->
+  <p class="section-title">Hot Dryer</p>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Drying Cycle</div>
+        <div class="card-sub">High heat – tumble dry</div>
+      </div>
+    </div>
+    <div class="steam-wrap">
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+    </div>
+  </div>
+
+  <!-- Soap Bubbles Card -->
+  <p class="section-title">Soap & Softener</p>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:10px;">Premium Detergent Active</div>
+    <div class="soap-bubbles-wrap" id="soapBubblesWrap"></div>
+  </div>
+
+  <!-- Services -->
+  <p class="section-title">Services – Tap to Order</p>
+  <div class="services-grid">
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20Wash%20%26%20Fold%20service%20%F0%9F%91%95" target="_blank">
+      <div class="service-icon">👕</div>
+      <div class="service-name">Wash & Fold</div>
+      <div class="service-price">From KES 200/kg</div>
+    </a>
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I%20need%20Dry%20Cleaning%20services%20%F0%9F%A7%A5" target="_blank">
+      <div class="service-icon">🧥</div>
+      <div class="service-name">Dry Clean</div>
+      <div class="service-price">From KES 350/pc</div>
+    </a>
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20Bedding%20laundry%20service%20%F0%9F%9B%8F%EF%B8%8F" target="_blank">
+      <div class="service-icon">🛏️</div>
+      <div class="service-name">Bedding</div>
+      <div class="service-price">From KES 500/set</div>
+    </a>
+    <a class="service-item" href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20Pick%20%26%20Deliver%20in%20Rongai%20%F0%9F%9A%97" target="_blank">
+      <div class="service-icon">🚗</div>
+      <div class="service-name">Pick & Deliver</div>
+      <div class="service-price">Free in Rongai</div>
+    </a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-brand">Raju's Laundry</div>
+  <a href="https://wa.me/254769279076?text=Hi%20Raju!%20I'd%20like%20to%20book%20a%20laundry%20pickup%20%F0%9F%91%8D" target="_blank" class="footer-cta">Book a Pickup</a>
+</footer>
+
+<script>
+  // Generate floating background bubbles
+  const bubblesEl = document.getElementById('bubbles');
+  for(let i = 0; i < 18; i++){
+    const b = document.createElement('div');
+    b.classList.add('bubble');
+    const size = 10 + Math.random()*30;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${8+Math.random()*12}s;
+      animation-delay:${Math.random()*-15}s;
+    `;
+    bubblesEl.appendChild(b);
+  }
+
+  // Soap bubbles inside the detergent card
+  const soapWrap = document.getElementById('soapBubblesWrap');
+  for(let i = 0; i < 14; i++){
+    const sb = document.createElement('div');
+    sb.classList.add('soap-bubble');
+    const sz = 12 + Math.random()*28;
+    sb.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${Math.random()*90}%;
+      animation-duration:${2+Math.random()*3}s;
+      animation-delay:${Math.random()*-4}s;
+    `;
+    soapWrap.appendChild(sb);
+  }
+</script>
+</body>
+</html>
